@@ -1,0 +1,16 @@
+---
+title: "week 3"
+author: "sophia"
+format: html
+editor: visual
+---
+
+
+```{r}
+library(ggplot2)
+
+gg <- ggplot2::ggplot(data = df)+geom_point(mapping = aes(x=fw, y=aae, fill=blue, slope=total, alpha=0.3)) + geom_hline(fill=red)
+
+```
+
+
