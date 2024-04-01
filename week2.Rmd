@@ -9,7 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#setup Rprofile
+## setup Rprofile
+
 ```{r}
 file.edit(".Rprofile")
 
