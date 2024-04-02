@@ -70,53 +70,28 @@ print(result$choices[[1]])
 
 
 
+##### Need to fix the problems above python environment settings. #####
 
 
 
-
-# read data
+# read data ----
 library(readr)
+library(tidyverse)
 exchangeRate <- read_csv("~/Downloads/BP01M01.csv")
+results <- list()
 
-# 讀取數據
-consumer_sentiment <- read.table(header = TRUE, text = "
-Year  Sentiment
-2000   90.3
-2001   62.4
-2002   62.9
-2003   60.4
-2004   80.7
-2005   88.5
-2006   87.3
-2007   92.9
-2008   64.1
-2009   55.3
-2010   71.8
-2011   64.8
-2012   67.1
-2013   77.6
-2014   84.6
-2015   98.1
-2016   91.8
-2017   97.7
-2018   98.4
-2019  96.8
-2020   81.0
-2021   88.3
-2022   65.2
-2023   59.0 
-2024   62.0
-")
+# 轉換資料格式 ----
+## 將文字資料轉換成日期格式
+results$date <- ym(exchangeRate$期間)
 
-library(ggplot2)
-library(dplyr)
+# 將日期格式轉換成時間序列格式
+results$date_ts <- 
+ts(as.POSIXct(exchangeRate$date, format = "%Y-%m-%d"), frequency = 12)
 
-# 將數據轉換為時間序列
-consumer_sentiment$Year <- as.numeric(consumer_sentiment$Year)
-consumer_sentiment_ts <- ts(consumer_sentiment$Sentiment, start = c(2000), end = c(2024), frequency = 1)
 
 # 繪製圖形
-results$graph_description <- ggplot(consumer_sentiment, aes(x = Year, y = Sentiment)) +
+library(ggplot2)
+results$graph_description <- ggplot(exchangeRate, aes(x = Year, y = Sentiment)) +
   geom_line() +
   geom_hline(yintercept = 100, linetype = "dashed") + 
   scale_x_continuous(breaks = seq(2000, 2024, 5)) +
