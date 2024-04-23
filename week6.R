@@ -82,11 +82,10 @@ results <- list()
 
 # 轉換資料格式 ----
 ## 將文字資料轉換成日期格式
-results$date <- ym(exchangeRate$期間)
+exchangeRate$date <- ym(exchangeRate$期間)
 
 # 將日期格式轉換成時間序列格式
-results$date_ts <- 
-ts(as.POSIXct(exchangeRate$date, format = "%Y-%m-%d"), frequency = 12)
+exchangeRate$date_ts <- ts(exchangeRate$date)
 
 
 # 繪製圖形
@@ -99,4 +98,7 @@ results$graph_description <- ggplot(exchangeRate, aes(x = Year, y = Sentiment)) 
        x = "Year",
        y = "Sentiment Index") +
   theme_minimal()
+
+
+
 
