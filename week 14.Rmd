@@ -119,9 +119,12 @@ line_chart
 ```
 
 # Practice at home
+
 ## AI Prompt
+
 此筆資料已經透過以下程式碼匯入：
-```
+
+```         
 library(readr)
 Legislative_Yuan_Movement <- read_csv("~/Downloads/Legislative Yuan Movement-codebook.csv")
 ```
@@ -130,13 +133,10 @@ Legislative_Yuan_Movement <- read_csv("~/Downloads/Legislative Yuan Movement-cod
 
 在`z6`變項中，1="濟南路" 2="青島東路大門東側（往林森南路方向）" 3="立法院庭院內" 4="青島東路大門西側 （往中山南路方向）" 5="其他（請說明"，依照1=1 "濟南路" 2 4 =2 "青島東路" 5=5"其他"，重新編碼成`area`變項。
 
-`area`變項依據`z6_o5`變項中，
-如果是"靠外交部"、"外交部側"或"群賢樓前"，`area`變項重新編碼成1="濟南路"
-如果是"A"、"A右"、"A2"、"A右2"、"A右大帳篷"、"A2右"、"青島舞臺最裡最右"或"青舞臺前"，`area`變項重新編碼成2="青島東路"；
-如果是"中山南路上"或"中山南路"，`area`變項重新編碼成3="中山南路"；
-如果是"教會"、"濟南教會"、"濟南教堂"或"濟南教會區"，`area`變項重新編碼成4="濟南教會"。
+`area`變項依據`z6_o5`變項中， 如果是"靠外交部"、"外交部側"或"群賢樓前"，`area`變項重新編碼成1="濟南路" 如果是"A"、"A右"、"A2"、"A右2"、"A右大帳篷"、"A2右"、"青島舞臺最裡最右"或"青舞臺前"，`area`變項重新編碼成2="青島東路"； 如果是"中山南路上"或"中山南路"，`area`變項重新編碼成3="中山南路"； 如果是"教會"、"濟南教會"、"濟南教堂"或"濟南教會區"，`area`變項重新編碼成4="濟南教會"。
 
 ## Import data
+
 ```{r}
 library(readr)
 Legislative_Yuan_Movement <- read_csv("~/Downloads/Legislative Yuan Movement-codebook.csv")
@@ -144,6 +144,7 @@ Legislative_Yuan_Movement <- read_csv("~/Downloads/Legislative Yuan Movement-cod
 ```
 
 ## Recode z6 variable
+
 ```{r}
 library(tidyverse)
 
@@ -157,6 +158,7 @@ Legislative_Yuan_Movement <- Legislative_Yuan_Movement %>%
 ```
 
 ## Recode area variable based on z6_o5
+
 ```{r}
 Legislative_Yuan_Movement <- Legislative_Yuan_Movement %>%
   mutate(area = case_when(
@@ -253,3 +255,14 @@ p <- ggplot() +
 ggsave("~/Documents/GitHub/112-2econDV-practice/Location_of_SampleCounts.jpg", plot = p, scale = 0.5, width = 16, height = 9)
 ```
 
+# 立院集結運動調查抽樣分佈
+
+本次調查多數問卷題目延續2014年臺北大學社會系集結師生一起志願性動員調查的社會運動資料庫，相隔十年再次發生社會運動，一群來自各大學社會學領域的碩博士生、社會學研究者，共同籌組本次調查。抽樣設計方面，參考十年前的調查方法，考量既有人力與運動現場即時變化，及時調整抽樣調查地點，涵蓋濟南路、青島東路、中山南路與濟南教會，抽樣時間為5/21 18:00-24:00，以及5/24 11:00-24:00。針對針對青島東路、濟南路、濟南教會有固定坐位區，以五排為一區抽取，並盡可能包含流動性高的邊角座位，以及長期停留的內側座位，而中山南路因為流動性高，沒有固定座位區，改透過固定間隔抽取，以路樹、椰子樹或建築物圍牆等顯眼標誌物來劃分區域，隨機抽取一位受訪者。問卷填寫過程以受訪者自填為主，兩天累計共231位受訪者，23位受訪者拒絕訪談，完訪率90.4%（208位受訪者完成訪談）。
+
+-   收集最多樣本的區域為主要舞台的青島東路，5/21、5/24兩天共收集92份樣本
+
+-   其次是濟南路，兩天共收集66份樣本
+
+-   再者是主要作為物資集結處的濟南教會，共收30份樣本
+
+-   最後是流動性最高的中山南路，收集了13份樣本
