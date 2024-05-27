@@ -1,0 +1,255 @@
+---
+title: "week 14"
+author: "sophia"
+date: "2024-05-21"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+      smooth: false
+---
+
+```{r}
+library(knitr)
+knitr::opts_chunk$set(echo = T)
+```
+
+# AI Prompt
+
+## Preset
+
+You are an assistant to data visualization. You use R in tidyverse style for assistance. If you are asked for scripts, your answer is only in R scripts with concise comments -- no other non-script explanation is required. The first line of your code chunk must be a comment line. Its format is `# {{summary_title}} -----` where `{{summary_title}}` is your short summary of the assisted task. Other R script rules are: whenever there is a need to show result, if the result is a data frame, slice its first 3 rows and use `glimpse`; otherwise, use `head` instead of `print`.
+
+For plotting, always use `theme_minimal` when it is not a map. If it uses map, use `theme_void` instead. Except `theme_void`, the x-axis line should be a solid black. If creating a new plot, always create a plot object and show it. If adding layers to an existing plot, always show the plot after adding each layer. A plot should always have a title, and a subtitle to show the unit of y axis. In addition, there should be a footnote showing data source.
+
+For map data, always use `geom_sf` for plotting unless impossible. When simplifying simple features, always use `st_simplify` with `preserveTopology = TRUE` and `dTolerance =1`.
+
+When requesting data from OpenStreetMap, always use `osmdata` package. When requesting data from OpenStreetMap, always use `osmdata` package. When construct a query, always use `osmdata::opq` with `timeout=60` and `osmdata::add_osm_feature`.
+
+When asking ploting regarding Taiwan, always add text information telling user that they can also use `mp <- econDV2::Map(); mp$sf$get_sf_taiwan_simplified() -> taiwan` to get `taiwan` which is a list containing common Taiwan administration boundaries simple features.
+
+The first code you give should always `library(tidyverse)`. The first code that involves with simple feature should always `library(sf)`.
+
+If you understand your role, say it -- no need to show any code at this time.
+
+## Tasks Prompt
+
+Here is a data frame 'companies' like this: \$ year <int> 2000, 2002, 2004, 2006, 2008, 2010, 2012, 2014, 2016, 2018, 2020,… \$ company <chr> "Microsoft", "Microsoft", "Microsoft", "Microsoft", "Microsoft", … \$ market_cap <dbl> 5.100400e+11, 2.838210e+11, 2.954774e+11, 2.937800e+11, 1.801852e… Code a line chart following material design UI.
+
+# Trillion-dollar tech company market cap
+
+```{r}
+# Trillion-dollar tech company market cap -----
+library(tidyverse)
+library(sf)
+
+# Data frame 'companies'
+companies <- tribble(
+  ~year, ~company, ~market_cap,
+  2000, "Microsoft", 510040000000,
+  2002, "Microsoft", 283821040000,
+  2004, "Microsoft", 295477440000,
+  2006, "Microsoft", 293780000000,
+  2008, "Microsoft", 180185200000,
+  2010, "Microsoft", 219134720000,
+  2012, "Microsoft", 249272320000,
+  2014, "Microsoft", 355376000000,
+  2016, "Microsoft", 482198400000,
+  2018, "Microsoft", 859371520000,
+  2020, "Microsoft", 1631568000000,
+  2000, "Amazon", 16545600000,
+  2002, "Amazon", 6679200000,
+  2004, "Amazon", 17517600000,
+  2006, "Amazon", 19166400000,
+  2008, "Amazon", 31764800000,
+  2010, "Amazon", 74334400000,
+  2012, "Amazon", 115655200000,
+  2014, "Amazon", 150788800000,
+  2016, "Amazon", 356789600000,
+  2018, "Amazon", 737632000000,
+  2020, "Amazon", 1592000000000,
+  2004, "Alphabet", 51151200000,
+  2006, "Alphabet", 117914400000,
+  2008, "Alphabet", 115070400000,
+  2010, "Alphabet", 193416000000,
+  2012, "Alphabet", 249995200000,
+  2014, "Alphabet", 345599200000,
+  2016, "Alphabet", 546762400000,
+  2018, "Alphabet", 766757600000,
+  2020, "Alphabet", 1190000000000,
+  2012, "Facebook", 63804800000,
+  2014, "Facebook", 213555200000,
+  2016, "Facebook", 368966400000,
+  2018, "Facebook", 424764800000,
+  2020, "Facebook", 792000000000,
+  2012, "Apple", 556624000000,
+  2014, "Apple", 642630400000,
+  2016, "Apple", 586038400000,
+  2018, "Apple", 851358400000,
+  2020, "Apple", 2312120000000
+)
+
+companies %>%
+  mutate(year = as.integer(year)) %>%
+  glimpse()
+
+# Plotting the line chart
+line_chart <- ggplot(companies, aes(x = year, y = market_cap, color = company)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  labs(
+    title = "Market Capitalization Over Years",
+    subtitle = "Market Cap in USD",
+    x = "Year",
+    y = "Market Capitalization",
+    caption = "Source: Company Data"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.line.x = element_line(color = "black"),
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    plot.caption = element_text(size = 8, hjust = 0)
+  )
+
+line_chart
+
+```
+
+# Practice at home
+## AI Prompt
+此筆資料已經透過以下程式碼匯入：
+```
+library(readr)
+Legislative_Yuan_Movement <- read_csv("~/Downloads/Legislative Yuan Movement-codebook.csv")
+```
+
+請把`z6`和`z6_o5`變項重新編碼成新變項`area`加入`Legislative_Yuan_Movement`中，編碼規則如下：
+
+在`z6`變項中，1="濟南路" 2="青島東路大門東側（往林森南路方向）" 3="立法院庭院內" 4="青島東路大門西側 （往中山南路方向）" 5="其他（請說明"，依照1=1 "濟南路" 2 4 =2 "青島東路" 5=5"其他"，重新編碼成`area`變項。
+
+`area`變項依據`z6_o5`變項中，
+如果是"靠外交部"、"外交部側"或"群賢樓前"，`area`變項重新編碼成1="濟南路"
+如果是"A"、"A右"、"A2"、"A右2"、"A右大帳篷"、"A2右"、"青島舞臺最裡最右"或"青舞臺前"，`area`變項重新編碼成2="青島東路"；
+如果是"中山南路上"或"中山南路"，`area`變項重新編碼成3="中山南路"；
+如果是"教會"、"濟南教會"、"濟南教堂"或"濟南教會區"，`area`變項重新編碼成4="濟南教會"。
+
+## Import data
+```{r}
+library(readr)
+Legislative_Yuan_Movement <- read_csv("~/Downloads/Legislative Yuan Movement-codebook.csv")
+
+```
+
+## Recode z6 variable
+```{r}
+library(tidyverse)
+
+Legislative_Yuan_Movement <- Legislative_Yuan_Movement %>%
+  mutate(area = case_when(
+    z6 == 1 ~ 1,
+    z6 %in% c(2, 4) ~ 2,
+    z6 == 5 ~ 5
+  ))
+
+```
+
+## Recode area variable based on z6_o5
+```{r}
+Legislative_Yuan_Movement <- Legislative_Yuan_Movement %>%
+  mutate(area = case_when(
+    z6_o5 %in% c("靠外交部", "外交部側", "群賢樓前") ~ 1,
+    z6_o5 %in% c("A", "A右", "A2", "A右2", "A右大帳篷", "A2右", "青島舞臺最裡最右", "青舞臺前") ~ 2,
+    z6_o5 %in% c("中山南路上", "中山南路") ~ 3,
+    z6_o5 %in% c("教會", "濟南教會", "濟南教堂", "濟南教會區") ~ 4,
+    TRUE ~ area
+  ))
+```
+
+## Plot
+
+```{r}
+# Visualize area distribution with sample counts using circle size and color -----
+library(tidyverse)
+library(sf)
+library(osmdata)
+
+# Define bounding boxes for each area
+bbox_list <- list(
+  jinan_rd = c(121.51812, 25.04448, 121.52357, 25.04123),
+  qingdao_rd = c(121.51898, 25.04508, 121.52170, 25.04346),
+  zhongshan_rd = c(121.51786, 25.04470, 121.52058, 25.04308),
+  jinan_church = c(121.51814, 25.04427, 121.52086, 25.04265)
+)
+
+# Fetch and simplify map data for each area
+map_data_list <- lapply(bbox_list, function(bbox) {
+  opq(bbox = bbox, timeout = 60) %>%
+    add_osm_feature(key = 'highway') %>%
+    osmdata_sf()
+})
+
+simplify_sf <- function(osmdata) {
+  osmdata$osm_lines <- st_simplify(osmdata$osm_lines, preserveTopology = TRUE, dTolerance = 1)
+  return(osmdata)
+}
+
+map_data_list <- lapply(map_data_list, simplify_sf)
+
+# Sample counts for each area
+area_counts <- Legislative_Yuan_Movement %>%
+  count(area)
+
+# Prepare base map
+
+Legislative_Yuan_map <- 
+  opq(bbox = c(121.516, 25.039, 121.525, 25.048), timeout = 60) %>%
+  add_osm_feature(key = 'name', value = '中山南路') %>%
+  osmdata_sf()
+
+
+Legislative_Yuan_map$osm_lines <- st_simplify(Legislative_Yuan_map$osm_lines, preserveTopology = TRUE, dTolerance = 1)
+
+# Coordinates for text labels (approximated for each area)
+label_coords <- tibble(
+  area = 1:4,
+  lon = c(121.520, 121.520, 121.519, 121.519),
+  lat = c(25.042, 25.044, 25.043, 25.041)
+)
+
+# Merge area_counts with label coordinates
+area_counts <- left_join(area_counts, label_coords, by = "area")
+
+# Plot map with area sample counts
+p <- ggplot() +
+  geom_sf(data = Legislative_Yuan_map$osm_lines, color = "gray") +
+  geom_sf(data = map_data_list$jinan_rd$osm_lines, color = "red", size = 0.8) +
+  geom_sf(data = map_data_list$qingdao_rd$osm_lines, color = "blue", size = 0.8) +
+  geom_sf(data = map_data_list$zhongshan_rd$osm_lines, color = "green", size = 0.8) +
+  geom_sf(data = map_data_list$jinan_church$osm_lines, color = "purple", size = 0.8) +
+  geom_point(data = area_counts, aes(x = lon, y = lat, size = n, color = factor(area)), shape = 21, fill = "white") +
+  geom_text(data = area_counts, aes(x = lon, y = lat, label = n), size = 8, color = "black") +
+  scale_size_continuous(range = c(3, 10)) +
+  scale_color_manual(values = c("red", "blue", "green", "purple", "black"),
+                     labels = c("1" = "濟南路", "2" = "青島東路", "3" = "中山南路", "4" = "濟南教會", "5" = "其他")) +
+  labs(
+    title = "Sample Counts of Areas",
+    subtitle = "Legislative Yuan Movement",
+    caption = "Data source: 臨時街頭民調小組",
+    color = "Area"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 32, face = "bold"), # 標題字體大小和樣式
+    plot.subtitle = element_text(size = 24), # 子標題字體大小
+    plot.caption = element_text(size = 12), # 註腳字體大小
+    legend.title = element_text(size = 24), # 圖例標題字體大小
+    legend.text = element_text(size = 16), # 圖例文字字體大小
+    axis.line.x = element_line(color = "black"))
+
+
+ggsave("~/Documents/GitHub/112-2econDV-practice/Location_of_SampleCounts.jpg", plot = p, scale = 0.5, width = 16, height = 9)
+```
+
