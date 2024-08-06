@@ -1,0 +1,132 @@
+---
+title: "week 15"
+author: "sophia"
+date: "2024-05-28"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+      smooth: false
+---
+
+# 後製
+
+```{r}
+# Trillion-dollar tech plot example -----
+library(tidyverse)
+
+# Create example data frame
+set.seed(123)
+date_seq <- seq.Date(from = as.Date("2000-01-01"), to = as.Date("2001-12-01"), by = "month")
+data <- tibble(
+  date = date_seq,
+  Microsoft = runif(length(date_seq), 0.1, 0.2),
+  Apple = runif(length(date_seq), 0.1, 0.3),
+  Alphabet = runif(length(date_seq), 0.1, 0.4),
+  Amazon = runif(length(date_seq), 0.05, 0.15),
+  Facebook = runif(length(date_seq), 0.05, 0.1)
+)
+
+# Transform data for plotting
+data_long <- data %>%
+  pivot_longer(cols = -date, names_to = "company", values_to = "market_cap")
+
+# Define custom colors for each company based on the given rules
+custom_colors <- c(
+  "Alphabet" = "red3",
+  "Microsoft" = "deepskyblue4",
+  "Apple" = "deepskyblue2",
+  "Amazon" = "green4",
+  "Facebook" = "green3"
+)
+
+# Ensure proper ordering of colors based on the rules
+ordered_companies <- c("Facebook", "Amazon", "Apple", "Microsoft", "Alphabet")
+
+# Plotting market capitalization over time for different companies
+market_cap_plot <- data_long %>%
+  mutate(company = factor(company, levels = ordered_companies)) %>%
+  ggplot(aes(x = date, y = market_cap, color = company)) +
+  geom_line(
+    size=1 #input$size
+  ) +
+  scale_color_manual(values = custom_colors) +
+  labs(
+    title = "Market Capitalization of Different Companies Over Time",
+    subtitle = "Market Cap in billions",
+    x = "Date",
+    y = "Market Cap (Billions)",
+    color = "Company",
+    caption = "Data source: [Your Data Source Here]"
+  ) +
+  theme_minimal() +
+  theme(axis.line.x = element_line(color = "black"),
+        plot.title = element_text(
+          size = 20 #input$title
+        ))
+
+market_cap_plot
+
+library(svglite)
+ggsave("test2.svg", market_cap_plot, width=700, height=500, units="px", dpi="screen", device=svg)
+```
+
+# Practice at home
+
+```{r}
+library(readr)
+Legislative_Yuan_Movement <- read_csv("Legislative Yuan Movement-codebook.csv")
+
+```
+### AI Preset Prompt
+You are an assistant to data visualization. You use R in tidyverse style for assistance. If you are asked for scripts, your answer is only in R scripts with concise comments -- no other non-script explanation is required. The first line of your code chunk must be a comment line. Its format is `# {{summary_title}} -----` where `{{summary_title}}` is your short summary of the assisted task. Other R script rules are: whenever there is a need to show result, if the result is a data frame, slice its first 3 rows and use `glimpse`; otherwise, use `head` instead of `print`. 
+
+For plotting, always use `theme_minimal` when it is not a map. If it uses map, use `theme_void` instead. Except `theme_void`, the x-axis line should be a solid black. If creating a new plot, always create a plot object and show it. If adding layers to an existing plot, always show the plot after adding each layer. A plot should always have a title, and a subtitle to show the unit of y axis. In addition, there should be a footnote showing data source. 
+
+When using any aesthetic elements, including colors and fonts, please follow the design guidelines of Material Design.
+
+For map data, always use `geom_sf` for plotting unless impossible. When simplifying simple features, always use `st_simplify` with `preserveTopology = TRUE` and `dTolerance =1`. 
+
+When requesting data from OpenStreetMap, always use `osmdata` package. When requesting data from OpenStreetMap, always use `osmdata` package. When construct a query, always use `osmdata::opq` with `timeout=60` and `osmdata::add_osm_feature`. 
+
+When asking ploting regarding Taiwan, always add text information telling user that they can also use `mp <- econDV2::Map(); mp$sf$get_sf_taiwan_simplified() -> taiwan` to get `taiwan` which is a list containing common Taiwan administration boundaries simple features.
+
+The first code you give should always `library(tidyverse)`. The first code that involves with simple feature should always `library(sf)`. 
+
+If you understand your role, say it -- no need to show any code at this time.
+## Calculate age in 2024
+AI Prompt:
+`a2`變項是出生西元年資料，請重新編碼成變項`age`，是在2024年的年齡。接著把`age`年齡變項分組，編成新變項`age_gp`，每十歲為一組並加上標籤，例如"0~9歲"、"10~19歲"、"20~29歲"、"30~39歲"等。
+
+```{r}
+# Calculate age in 2024
+Legislative_Yuan_Movement <- Legislative_Yuan_Movement %>%
+ mutate(age = 2024 - a2,
+         age_gp = cut(age, breaks = seq(0, 100, by = 10),
+                      labels = c("0~9歲", "10~19歲", "20~29歲", "30~39歲", "40~49歲", "50~59歲", "60~69歲", "70~79歲", "80~89歲", "90~99歲"),
+                      right = FALSE))
+
+glimpse(Legislative_Yuan_Movement$age_gp)
+```
+
+## a bar chart of age_gp
+AI Prompt:
+請把年齡分組變項`age_gp`視覺化圖表
+```{r}
+# Create a bar chart of age_gp
+age_gp_plot <- ggplot(Legislative_Yuan_Movement, aes(x = age_gp)) +
+  geom_bar(fill = "#00796B") + # Material Design teal color
+  labs(title = "Distribution of Age Groups",
+       subtitle = "Age groups in 10-year intervals",
+       caption = "Data source: Legislative Yuan Movement Survey") +
+  theme_minimal() +
+  theme(axis.line.x = element_line(color = "black", size = 1))
+
+age_gp_plot
+
+ggsave("age_gp.svg", plot = age_gp_plot, scale = 0.5, width = 16, height = 9, dpi = "screen")
+```
+
+

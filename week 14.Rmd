@@ -177,6 +177,7 @@ Legislative_Yuan_Movement <- Legislative_Yuan_Movement %>%
 library(tidyverse)
 library(sf)
 library(osmdata)
+library(econDV2)
 
 # Define bounding boxes for each area
 bbox_list <- list(
@@ -205,10 +206,9 @@ area_counts <- Legislative_Yuan_Movement %>%
   count(area)
 
 # Prepare base map
-
 Legislative_Yuan_map <- 
-  opq(bbox = c(121.516, 25.039, 121.525, 25.048), timeout = 60) %>%
-  add_osm_feature(key = 'name', value = '中山南路') %>%
+  opq(bbox = c(121.516, 25.040, 121.525, 25.047), timeout = 60) %>%
+  add_osm_feature(key = 'highway') %>%
   osmdata_sf()
 
 
@@ -227,12 +227,12 @@ area_counts <- left_join(area_counts, label_coords, by = "area")
 # Plot map with area sample counts
 p <- ggplot() +
   geom_sf(data = Legislative_Yuan_map$osm_lines, color = "gray") +
-  geom_sf(data = map_data_list$jinan_rd$osm_lines, color = "red", size = 0.8) +
-  geom_sf(data = map_data_list$qingdao_rd$osm_lines, color = "blue", size = 0.8) +
-  geom_sf(data = map_data_list$zhongshan_rd$osm_lines, color = "green", size = 0.8) +
-  geom_sf(data = map_data_list$jinan_church$osm_lines, color = "purple", size = 0.8) +
+  geom_sf(data = map_data_list$jinan_rd$osm_lines, color = "red") +
+  geom_sf(data = map_data_list$qingdao_rd$osm_lines, color = "blue") +
+  geom_sf(data = map_data_list$zhongshan_rd$osm_lines, color = "green") +
+  geom_sf(data = map_data_list$jinan_church$osm_lines, color = "purple") +
   geom_point(data = area_counts, aes(x = lon, y = lat, size = n, color = factor(area)), shape = 21, fill = "white") +
-  geom_text(data = area_counts, aes(x = lon, y = lat, label = n), size = 8, color = "black") +
+  geom_text(data = area_counts, aes(x = lon, y = lat, label = n), size = 4, color = "black") +
   scale_size_continuous(range = c(3, 10)) +
   scale_color_manual(values = c("red", "blue", "green", "purple", "black"),
                      labels = c("1" = "濟南路", "2" = "青島東路", "3" = "中山南路", "4" = "濟南教會", "5" = "其他")) +
@@ -244,15 +244,16 @@ p <- ggplot() +
   ) +
   theme_void() +
   theme(
-    plot.title = element_text(size = 32, face = "bold"), # 標題字體大小和樣式
-    plot.subtitle = element_text(size = 24), # 子標題字體大小
-    plot.caption = element_text(size = 12), # 註腳字體大小
-    legend.title = element_text(size = 24), # 圖例標題字體大小
-    legend.text = element_text(size = 16), # 圖例文字字體大小
+    plot.title = element_text(size = 24, face = "bold"), # 標題字體大小和樣式
+    plot.subtitle = element_text(size = 20), # 子標題字體大小
+    plot.caption = element_text(size = 10), # 註腳字體大小
+    legend.title = element_text(size = 16), # 圖例標題字體大小
+    legend.text = element_text(size = 10), # 圖例文字字體大小
     axis.line.x = element_line(color = "black"))
 
-
-ggsave("~/Documents/GitHub/112-2econDV-practice/Location_of_SampleCounts.jpg", plot = p, scale = 0.5, width = 16, height = 9)
+p
+library(svglite)
+ggsave("Location_of_SampleCounts.svg", plot = p, scale = 1, width = 16, height = 9, dpi = "screen")
 ```
 
 # 立院集結運動調查抽樣分佈
